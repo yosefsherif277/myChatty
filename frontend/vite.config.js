@@ -4,17 +4,17 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  theme: {
-    extend: {},
+  resolve: {
+    alias: {
+      src: "/src",
+    },
   },
   server: {
-    port: 5173,
+    port: 3000,
     proxy: {
       "/api": {
-        target: "https://my-chatty-back.vercel.app/",
+        target: "http://localhost:5000",
         changeOrigin: true,
-        secure: false,
-        withCredentials: true,
       },
     },
   },

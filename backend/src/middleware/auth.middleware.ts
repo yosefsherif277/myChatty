@@ -1,7 +1,12 @@
-import jwt from "jsonwebtoken";
-import User from "../models/user.model.js";
+import { Request, Response, NextFunction } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import User from "../models/user.model";
 
-export const protectRoute = async (req, res, next) => {
+export const protectRoute = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const token = req.cookies.jwt;
     if (!token) {
@@ -10,15 +15,22 @@ export const protectRoute = async (req, res, next) => {
         .json({ message: "Unauthorized, no token provided" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET as string
+    ) as JwtPayload;
+    if (!decoded) {
+      return res.status(401).json({ message: "Unauthorized, invalid token" });
+    }
+
     const user = await User.findById(decoded.userId).select("-password");
     if (!user) {
       return res.status(401).json({ message: "Unauthorized, user not found" });
     }
 
-    req.user = user;
+    (req as any).user = user;
     next();
-  } catch (err) {
+  } catch (err: any) {
     if (err.name === "TokenExpiredError") {
       return res.status(401).json({ message: "Token expired" });
     }
