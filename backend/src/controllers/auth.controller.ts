@@ -45,8 +45,11 @@ export const register = async (req: Request, res: Response) => {
     } else {
       res.status(500).json({ message: "Server Error" });
     }
-  } catch (err: any) {
-    console.log(err.message);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log(err.message);
+      res.status(500).json({ message: "Server Error" });
+    }
   }
 };
 export const login = async (req: Request, res: Response) => {
@@ -70,18 +73,22 @@ export const login = async (req: Request, res: Response) => {
       email: user.email,
       profilePic: user.profilePic,
     });
-  } catch (error: any) {
-    console.log(error.message);
-    return res.status(500).json({ message: "Server Error" });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error.message);
+      return res.status(500).json({ message: "Server Error" });
+    }
   }
 };
 export const logout = (req: Request, res: Response) => {
   try {
     res.clearCookie("jwt");
     return res.status(200).json({ message: "Logged out successfully" });
-  } catch (error: any) {
-    console.log(error.message);
-    return res.status(500).json({ message: "Server Error" });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error.message);
+      return res.status(500).json({ message: "Server Error" });
+    }
   }
 };
 
@@ -100,9 +107,11 @@ export const updateProfile = async (req: Request, res: Response) => {
       { new: true }
     );
     return res.status(200).json(updatedUser);
-  } catch (error: any) {
-    console.log(error.message);
-    return res.status(500).json({ message: "Server Error" });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error.message);
+      return res.status(500).json({ message: "Server Error" });
+    }
   }
 };
 
@@ -110,8 +119,10 @@ export const checkAuth = (req: Request, res: Response) => {
     try {
         res.status(200).json((req as any).user);
         console.log((req as any).user);
-    } catch (error: any) {
-        console.log(error.message);
-        return res.status(500).json({ message: "Server Error" });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.log(error.message);
+            return res.status(500).json({ message: "Server Error" });
+        }
     }
 }
