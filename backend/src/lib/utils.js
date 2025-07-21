@@ -1,33 +1,16 @@
 import jwt from "jsonwebtoken";
 
 export const generateToken = (userId, res) => {
-  const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: "1h", // Access token expires in 1 hour
-    algorithm: "HS256",
+  const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
   });
 
-  const refreshToken = jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: "90d", // Refresh token expires in 90 days
-    algorithm: "HS256",
-  });
-
-  // Set access token in cookie
-  res.cookie("jwt", accessToken, {
-    httpOnly: true,
-    maxAge: 60 * 60 * 1000, // 1 hour
-    sameSite: "lax",
-    secure: process.env.NODE_ENV != "development",
-    path: "/",
-  });
-
-  // Set refresh token in cookie
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days
-    sameSite: "lax",
+  res.cookie("jwt", token, {
+    maxAge: 7 * 24 * 60 * 60 * 1000, // MS
+    httpOnly: true, // prevent XSS attacks cross-site scripting attacks
+    sameSite: "strict", // CSRF attacks cross-site request forgery attacks
     secure: process.env.NODE_ENV !== "development",
-    path: "/api/auth/refresh", // Restrict refresh token to auth refresh endpoint only
   });
 
-  return { accessToken, refreshToken };
+  return token;
 };
