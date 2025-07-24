@@ -1,0 +1,11 @@
+{
+  "name": "chatty",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "npm run dev --prefix backend",
+    "build": "npm run build --prefix frontend",
+    "start": "npm start --prefix backend"
+  }
+}
